@@ -25,8 +25,12 @@ First you need to define clonning stategy:
 ```ruby
 class CompanyCopyStrategy < Cloned::Strategy
   declare :company do
-    before(copied_company) do
+    before do |copied_company|
       copied_company.copied_at = Time.zone.now
+    end
+
+    after do |copied_company|
+      copied_company.departments_count = copied_company.departments.size
     end
 
     nullify :created_at, :updated_at
@@ -35,7 +39,7 @@ class CompanyCopyStrategy < Cloned::Strategy
   end
 
   declare :department do
-    association(:employees)
+    association :employees, if: ->(employee) { employee.salary > 2000 }
   end
 
   declare :employee do
@@ -48,9 +52,7 @@ Then you able to build or create clones:
 ```ruby
 CompanyCopyStrategy.make(Company.first, Account.last.companies)
 ```
-
 or
-
 ```ruby
 CompanyCopyStrategy.create(Company.first, Account.last.companies)
 ```
