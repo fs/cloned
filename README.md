@@ -24,24 +24,23 @@ First you need to define clonning stategy:
 
 ```ruby
 class CompanyCopyStrategy < Cloned::Strategy
-    declare :company do
-        before(copied_company) do
-            copied_company.copied_at = Time.zone.now
-        end
-
-        nullify :created_at, :updated_at
-
-        association(:departments)
+  declare :company do
+    before(copied_company) do
+      copied_company.copied_at = Time.zone.now
     end
 
-    declare :department do
-        association(:employees)
-    end
+    nullify :created_at, :updated_at
 
-    declare :employee do
-        nullify :last_sickleave
-        nullify :vacation_at
-    end
+    association(:departments)
+  end
+
+  declare :department do
+    association(:employees)
+  end
+
+  declare :employee do
+    nullify :last_sickleave, :vacation_at
+  end
 end
 ```
 Then you able to build or create clones:
