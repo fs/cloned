@@ -28,6 +28,20 @@ RSpec.describe Cloned::Strategy do
   let(:bob) { Employee.find_by(firstname: 'Bob') }
   let(:account2) { Account.second }
 
+  describe '.cloners_map' do
+    let(:department_map) { DepartmentStrategy.cloners_map }
+    let(:employee_map) { EmployeeStrategy.cloners_map }
+
+    it 'stores cloners for each model class' do
+      expect(department_map.keys).to match_array(%w(Department Employee))
+      expect(employee_map.keys).to match_array(%w(Employee))
+    end
+
+    it 'defines map for each strategy' do
+      expect(department_map).not_to eq(employee_map)
+    end
+  end
+
   describe '#make' do
     context 'with destination' do
       let(:target) { bob }
