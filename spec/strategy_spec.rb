@@ -45,7 +45,8 @@ RSpec.describe Cloned::Strategy do
   describe '#make' do
     context 'with destination' do
       let(:target) { bob }
-      let(:copy) { EmployeeStrategy.make(target: target, destination: department_b.employees) }
+      let(:destination) { department_b.employees }
+      let(:copy) { EmployeeStrategy.make(target: target, destination: destination) }
 
       it 'builds new record in destination' do
         expect(copy).to be_persisted
@@ -53,13 +54,24 @@ RSpec.describe Cloned::Strategy do
         expect(copy.payrolls.size).to be(2)
         expect(copy.address.adds).to eq(bob.address.adds)
       end
+
+      context 'not persisted' do
+        let(:destination) { account2.departments.new.employees }
+
+        it 'builds new record in destination' do
+          expect(copy).not_to be_persisted
+          expect(destination).to include(copy)
+          expect(copy.payrolls.size).to be(2)
+          expect(copy.address.adds).to eq(bob.address.adds)
+        end
+      end
     end
 
     context 'without destination' do
       let(:target) { department_a }
       let(:copy) { DepartmentStrategy.make(target: target) }
 
-      it 'builds new record with all associations' do
+      it 'builds new record with expected associations' do
         expect(copy).to be_new_record
         expect(copy.employees_count).to be_nil
         expect(copy.account).to be_new_record
@@ -69,7 +81,7 @@ RSpec.describe Cloned::Strategy do
       context 'with has_many association' do
         let(:target) { bob }
 
-        it 'builds new record with all associations' do
+        it 'builds new record with expected associations' do
           expect(copy).to be_new_record
           expect(copy.payrolls.size).to be(0)
           expect(copy.address).to be_new_record
