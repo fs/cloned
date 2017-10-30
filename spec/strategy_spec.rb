@@ -36,7 +36,8 @@ RSpec.describe Cloned::Strategy do
       it 'builds new record in destination' do
         expect(copy).to be_persisted
         expect(department_b.employees).to include(copy)
-        expect(department_b.employees.first.payrolls.map(&:total)).to all(be > 1000)
+        expect(copy.payrolls.size).to be(2)
+        expect(copy.address.adds).to eq(bob.address.adds)
       end
     end
 
