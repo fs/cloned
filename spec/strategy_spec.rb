@@ -43,6 +43,17 @@ RSpec.describe Cloned::Strategy do
   end
 
   describe '#make' do
+    context 'with conflict in destination' do
+      let(:target) { department_a }
+      let(:copy) { DepartmentStrategy.make(target: target, destination: account2.departments) }
+
+      it 'resolves destinations' do
+        expect { copy }.not_to change { Account.count }
+        expect(copy).to be_persisted
+        expect(account2.departments).to include(copy)
+      end
+    end
+
     context 'with destination' do
       let(:target) { bob }
       let(:destination) { department_b.employees }
