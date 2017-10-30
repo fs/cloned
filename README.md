@@ -50,12 +50,13 @@ end
 Then you able to build or create clones:
 
 ```ruby
-CompanyCopyStrategy.make(Company.first, Account.last.companies)
+CompanyCopyStrategy.make(target: Company.first, destination: Account.last.companies)
 ```
 or
 ```ruby
-CompanyCopyStrategy.create(Company.first, Account.last.companies)
+CompanyCopyStrategy.make(target: Company.first)
 ```
+Cloning destination can be has_many association or nil.
 
 ## Contributing
 

@@ -15,12 +15,8 @@ class Cloned::Strategy
       cloners_map[klass.name] || Cloned::Base
     end
 
-    def make(target, destination, options = {})
-      find_copier(target.class).new(target, destination, options).make
-    end
-
-    def create(target, destination, options = {})
-      make(target, destination, options.merge(force: true))
+    def make(target:, destination: nil, **options)
+      find_copier(target.class).new(target: target, destination: destination, **options).make
     end
   end
 end

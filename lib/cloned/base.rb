@@ -5,7 +5,7 @@ module Cloned
     attr_reader :copy, :target, :destination, :options
     delegate :strategy, to: :class
 
-    def initialize(target, destination, options = {})
+    def initialize(target:, destination: nil, **options)
       @target = target
       @destination = destination
       @options = options
@@ -53,9 +53,14 @@ module Cloned
     private
 
     def copy_association(target_association:, destination:, **options)
-      copier = strategy.find_copier(target_association.proxy_association.klass)
-      target_association.each do |target_item|
-        copier.new(target_item, destination, options.merge(skip_transaction: true)).make
+      if target_association.respond_to?(:proxy_association)
+        copier = strategy.find_copier(target_association.proxy_association.klass)
+        target_association.each do |target_item|
+          copier.new(target: target_item, destination: destination, **options.merge(skip_transaction: true)).make
+        end
+      else
+        copier = strategy.find_copier(target_association.class)
+        copier.new(target: target_association, destination: destination, **options.merge(skip_transaction: true)).make
       end
     end
 
@@ -63,7 +68,7 @@ module Cloned
       self.class.associations.each do |association_id, options|
         copy_association(
           target_association: target.public_send(association_id),
-          destination: clon.public_send(association_id),
+          destination: DestinationProxy.new(clon, association_id),
           **options)
       end
     end
