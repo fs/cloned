@@ -3,7 +3,7 @@ require 'cloned/dsl'
 module Cloned
   class Base
     attr_reader :copy, :target, :destination, :options
-    delegate :strategy, to: :class
+    delegate :strategy, :clearing_attributes, to: :class
 
     def initialize(target:, destination: nil, **options)
       @target = target
@@ -71,10 +71,6 @@ module Cloned
           destination: DestinationProxy.new(clon, association_id),
           **options)
       end
-    end
-
-    def clearing_attributes
-      []
     end
 
     def before(clon)

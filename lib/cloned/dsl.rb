@@ -1,7 +1,5 @@
 module Cloned
   module DSL
-    attr_reader :associations
-
     def before(&block)
       define_method :declared_before, &block
     end
@@ -11,9 +9,7 @@ module Cloned
     end
 
     def nullify(*attributes)
-      define_method :clearing_attributes do
-        attributes
-      end
+      clearing_attributes.push(*attributes)
     end
 
     def association(association_id, options = {})
@@ -22,6 +18,10 @@ module Cloned
 
     def associations
       @associations ||= {}
+    end
+
+    def clearing_attributes
+      @clearing_attributes ||= []
     end
   end
 end
